@@ -32,7 +32,9 @@
     });
 
     langButtons.forEach(function (btn) {
-      btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+      var isActive = btn.getAttribute("data-lang") === lang;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-pressed", isActive ? "true" : "false");
     });
 
     htmlEl.setAttribute("lang", lang === "en" ? "en" : "pt-BR");
@@ -57,6 +59,30 @@
     /* ignore */
   }
   applyLanguage(savedLang);
+
+  // Header shadow on scroll
+  var header = document.getElementById("siteHeader");
+  function onScroll() {
+    header.classList.toggle("scrolled", window.scrollY > 10);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Reveal on scroll
+  var revealEls = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function (el) { observer.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add("visible"); });
+  }
 
   // Footer year
   var yearEl = document.getElementById("year");
